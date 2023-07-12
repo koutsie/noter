@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.0 - @k@layer8.space - mit
+# noter 1.0.2 - @k@layer8.space - mit
 
 nlog() {
   local ORANGE='\033[0;33m'
@@ -27,6 +27,7 @@ output_file="notes.html"
 echo "<!DOCTYPE html>
 <html>
 <head>
+  <meta charset='utf-8'> 
   <title>$notecount notes | noter</title>
   <meta property='og:title' content='noter | simple notes with bash' />
   <meta property='og:description' content='noter | view & share your notes' />
@@ -90,8 +91,9 @@ for file in $(ls -r notes/*.txt); do
 done
 
 # bottom navigation
+echo "<div class='generated-with'>generated with <a href='https://git.sr.ht/~koutsie/noter'>noter</a></div>" >>"$output_file"
 echo "<div class='back-to-top'><a href='#'>Back to Top</a></div>" >>"$output_file"
-echo "<div class='last-updated'>Last Updated: $(date +"%Y-%m-%d %H:%M:%S")</div>" >>"$output_file"
+echo "<div class='last-updated'>last Updated: $(date +"%Y-%m-%d %H:%M:%S")</div>" >>"$output_file"
 
 echo "</div>
 </body>
