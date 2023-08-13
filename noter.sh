@@ -13,21 +13,21 @@ if [ ! -d "notes" ]; then
 fi
 
 checksetting() {
-  # Use this function to check for a setting without repetition
-  # Eg:
-  # checksetting "yourmom" "$isyourmom"
-  if [ "$2" = true ]; then
-    echo "$1" >>"$output_file"
-  fi
+    # Use this function to check for a setting without repetition
+    # Eg:
+    # checksetting "yourmom" "$isyourmom"
+    if [ "$2" = true ]; then
+        echo "$1" >>"$output_file"
+    fi
 }
 
 givefavicon() {
-  local file_path="$1"
-
-  if [ -f "$file_path" ]; then
-    local base64_data="$(base64 -w 0 "$file_path")"
-    echo "data:image/png;base64,$base64_data"
-  fi
+    local file_path="$1"
+    
+    if [ -f "$file_path" ]; then
+        local base64_data="$(base64 -w 0 "$file_path")"
+        echo "data:image/png;base64,$base64_data"
+    fi
 }
 
 generate_note_html() {
