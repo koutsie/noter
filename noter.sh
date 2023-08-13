@@ -19,6 +19,7 @@ checksetting() {
   if [ "$2" = true ]; then
     echo "$1" >>"$output_file"
   fi
+}
 
 givefavicon() {
   local file_path="$1"
