@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.1.1 - "the oops im lazy update" - @k@layer8.space - mit
+# noter 1.1.2 - "fuck fever" - @k@layer8.space - mit
 
 nlog() {
     local ORANGE='\033[0;33m'
@@ -40,7 +40,7 @@ generate_note_html() {
     if [ "$2" = true ]; then
         echo "<h3><a href='#$(date -d "$(basename "$1" .txt)" +"%Y")'>$(date -d "$(basename "$1" .txt)" +"%Y")</a></h3>"
     fi
-    echo "<h4><a href='$(basename "$1" .txt).html'>$note_date</a></h4>"
+    echo "<h4><a href='#$(basename "$1" .txt)'>$note_date</a></h4>"
     echo "<pre>$(cat "$1")</pre>"
     echo "</div>"
 }
