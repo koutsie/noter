@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.1.2 - "fuck fever" - @k@layer8.space - mit
+# noter 1.1.5 - "tired tire tried" - @k@layer8.space - mit
 
 nlog() {
     local ORANGE='\033[0;33m'
@@ -31,9 +31,15 @@ givefavicon() {
 }
 
 generate_note_html() {
+    # NOTE TO SELF: Figure out parsing html blocks (ie: <code>) so that we can apply styles for whole
+    # elements instead of doing what we're doing right now...
     local note_date="$(date -d "$(basename "$1" .txt)" +"%B %d, %Y")"
     for img in $(grep -oP '(?<=<img src=").*?(?=")' "$1"); do
-        sed -i "s|<img src=\"$img\"|<img src=\"$img\" loading=\"lazy\"|g" "$1"
+        # Check if the loading attribute already exists
+        if ! grep -q "src=\"$img\" loading=\"lazy\"" "$1"; then
+            # Add the loading attribute if it doesn't exist
+            sed -i "s|<img src=\"$img\"|<img src=\"$img\" loading=\"lazy\"|g" "$1"
+        fi
     done
     echo "<a name='$(basename "$1" .txt)'></a>"
     echo "<div class='note'>"
@@ -105,6 +111,11 @@ echo "<!DOCTYPE html>
     }
     pre {
       color: #fff;
+      white-space: pre-wrap;
+    }
+    code {
+      color: orange !important;
+      font-family: 'Courier New', monospace;
       white-space: pre-wrap;
     }
     .back-to-top {
