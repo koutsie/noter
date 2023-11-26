@@ -1,5 +1,9 @@
 #!/bin/bash
-# noter 1.1.5 - "tired tire tried" - @k@layer8.space - mit
+# noter 1.1.6 - "i forgor" - @k@layer8.space - mit
+
+showgenerator="true"
+backtotop="true"
+lastupdated="true"
 
 nlog() {
     local ORANGE='\033[0;33m'
@@ -41,6 +45,7 @@ generate_note_html() {
             sed -i "s|<img src=\"$img\"|<img src=\"$img\" loading=\"lazy\"|g" "$1"
         fi
     done
+    
     echo "<a name='$(basename "$1" .txt)'></a>"
     echo "<div class='note'>"
     if [ "$2" = true ]; then
@@ -114,7 +119,7 @@ echo "<!DOCTYPE html>
       white-space: pre-wrap;
     }
     code {
-      color: orange !important;
+      color: orange;
       font-family: 'Courier New', monospace;
       white-space: pre-wrap;
     }
@@ -151,6 +156,7 @@ done
 checksetting "<div class='generated-with'>generated with <a href='https://git.sr.ht/~koutsie/noter'>noter</a></div>" "$showgenerator"
 checksetting "<div class='back-to-top'><a href='#'>Back to Top</a></div>" "$backtotop"
 checksetting "<div class='last-updated'>last Updated: $(date +"%Y-%m-%d %H:%M:%S")</div>" "$lastupdated"
+
 
 echo "</div>
 </body>
