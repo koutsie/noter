@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.1.6 - "i forgor" - @k@layer8.space - mit
+# noter 1.1.7 - "verofoed" - @k@layer8.space - mit
 
 showgenerator="true"
 backtotop="true"
@@ -80,6 +80,7 @@ echo "<!DOCTYPE html>
 <html>
 <head>
   <meta charset='utf-8'>
+  <a rel='me' href='https://layer8.space/@k'>Mastodon</a>
   <title>$notecount notes | noter</title>
   <meta property='og:title' content='koutsies telenotes' />
   <meta property='og:description' content='thoughts about mainly computers... maybe recipes and cats too?' />
