@@ -1,9 +1,10 @@
 #!/bin/bash
-# noter 1.1.7 - "verofoed" - @k@layer8.space - mit
+# noter 1.2.1 - "feeds, holy shit!" - @k@layer8.space - mit
 
 showgenerator="true"
 backtotop="true"
 lastupdated="true"
+#rssfeed="true"
 
 nlog() {
     local ORANGE='\033[0;33m'
@@ -72,22 +73,81 @@ generate_top_year_bar() {
     echo "$top_bar"
 }
 
+
+# this took way too long but fuck it
+# im faster than Google at getting a
+# feed going goddamit!
+generate_rss_feed() {
+    local rss_file="feed.xml"
+    local rss_title="koutsies telenotes"
+    local rss_description="thoughts about mainly computers... maybe recipes and cats too?"
+    local rss_link="https://k0.tel/"
+    local rss_pubdate=$(date -u +"%a, %d %b %Y %H:%M:%S GMT")
+    
+    xml_escape() {
+        local content="$1"
+        sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&apos;/g' <<< "$content"
+    }
+    
+    # im sorry for these crimes against humanity
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+    <rss version=\"2.0\">
+    <channel>
+    <title>$(xml_escape "$rss_title")</title>
+    <link>$rss_link</link>
+    <description>$(xml_escape "$rss_description")</description>
+    <pubDate>$rss_pubdate</pubDate>
+    <lastBuildDate>$rss_pubdate</lastBuildDate>
+    <docs>https://cyber.harvard.edu/rss/rss.html</docs>
+    <generator>noter</generator>" >"$rss_file"
+    
+    if [ ! -d "notes" ]; then
+        echo "Directory 'notes' not found!"
+        return 1
+    fi
+    
+    # this works, don't touch.
+    for file in $(find notes -name '*.txt' -type f -print0 | sort -zr | xargs -0); do
+        if [ -f "$file" ] && [ -s "$file" ]; then
+            local note_date=$(date -d "$(basename "$file" .txt)" +"%a, %d %b %Y %H:%M:%S GMT")
+            local note_link="$rss_link#$(basename "$file" .txt)"
+            local note_title=$(basename "$file" .txt)
+            local note_description=$(head -n 1 "$file")  # Use the first line of the note as the description
+            
+            echo "  <item>
+    <title>$(xml_escape "$note_title")</title>
+    <link>$note_link</link>
+    <description>$(xml_escape "$note_description")</description>
+    <pubDate>$note_date</pubDate>
+            </item>" >>"$rss_file"
+        fi
+    done
+    
+    echo "</channel>
+    </rss>" >>"$rss_file"
+    
+    nlog "rss feed generated, please remember to move it too with the site: $rss_file"
+}
+
+
+
+
 notecount=$(find notes -name "*.txt" ! -empty | wc -l)
 
 # Create HTML file
-output_file="notes.html"
+output_file="index.html"
 echo "<!DOCTYPE html>
 <html>
 <head>
   <meta charset='utf-8'>
-  <a rel='me' href='https://layer8.space/@k'>Mastodon</a>
   <title>$notecount notes | noter</title>
   <meta property='og:title' content='koutsies telenotes' />
   <meta property='og:description' content='thoughts about mainly computers... maybe recipes and cats too?' />
-  <meta property='og:type' content='website' />
+  <meta property='og:type' content='blog' />
   <meta property='og:generator' content='noter' />
   <!-- those who seek, shall see - but thy shall be prepared... -->
   <link rel='icon' type='image/png' href='$(givefavicon "$favicon")'>
+  <link rel='alternate' type='application/atom+xml' title="rss" href='/feed.xml' />
   <meta name='last-generated' content='$(date +"%Y-%m-%d %H:%M:%S")' />
   <style>
     body {
@@ -120,7 +180,7 @@ echo "<!DOCTYPE html>
       white-space: pre-wrap;
     }
     code {
-      color: orange;
+      color: #ff8c00;
       font-family: 'Courier New', monospace;
       white-space: pre-wrap;
     }
@@ -142,7 +202,7 @@ echo "<!DOCTYPE html>
   </style>
 </head>
 <body>
-<div class='container'><h1>notes</h1>" >"$output_file"
+<div class='container'><h1>koutsie's telenotes</h1><br><center> <a rel='me' href='https://layer8.space/@k'>fedi</a> | <a href="feed.rss">rss</a> | <a href="https://the-sauna.icu/">sauna</a> </center>" >"$output_file"
 generate_top_year_bar >>"$output_file"
 # loop for every note in notes
 nlog "generating page..."
@@ -152,6 +212,10 @@ for file in $(ls -r notes/*.txt); do
         generate_note_html "$file" >>"$output_file"
     fi
 done
+
+# generate page's rss feed
+# TODO: don't embed to site if not enabled:tm:
+generate_rss_feed
 
 # bottom navigation
 checksetting "<div class='generated-with'>generated with <a href='https://git.sr.ht/~koutsie/noter'>noter</a></div>" "$showgenerator"
