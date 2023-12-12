@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.2.1 - "feeds, holy shit!" - @k@layer8.space - mit
+# noter 1.2.2 - "feeds, holy shit!" - @k@layer8.space - mit
 
 showgenerator="true"
 backtotop="true"
@@ -202,7 +202,7 @@ echo "<!DOCTYPE html>
   </style>
 </head>
 <body>
-<div class='container'><h1>koutsie's telenotes</h1><br><center> <a rel='me' href='https://layer8.space/@k'>fedi</a> | <a href="feed.rss">rss</a> | <a href="https://the-sauna.icu/">sauna</a> </center>" >"$output_file"
+<div class='container'><h1>koutsie's telenotes</h1><br><center> <a rel='me' href='https://layer8.space/@k'>fedi</a> | <a href="feed.xml">rss</a> | <a href="https://the-sauna.icu/">sauna</a> </center>" >"$output_file"
 generate_top_year_bar >>"$output_file"
 # loop for every note in notes
 nlog "generating page..."
