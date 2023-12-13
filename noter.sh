@@ -1,5 +1,5 @@
 #!/bin/bash
-# noter 1.2.3 - "nice styles" - @k@layer8.space - mit
+# noter 1.2.4 - "nice font" - @k@layer8.space - mit
 
 showgenerator="true"
 backtotop="true"
@@ -156,6 +156,8 @@ echo "<!DOCTYPE html>
   <link rel='alternate' type='application/atom+xml' title="rss" href='/feed.xml' />
   <meta name='last-generated' content='$(date +"%Y-%m-%d %H:%M:%S")' />
   <style>
+    /* font by https://www.1001fonts.com/users/junkohanhero/ */
+    @font-face { font-family: header; src: url(scratch_x_black.ttf); }
     body {
       background-color: #0f0f0f;
       color: #fff;
@@ -183,6 +185,7 @@ echo "<!DOCTYPE html>
     }
     h1 {
       text-align: center;
+      font-family: "header", sans-serif;
     }
     h3 {
       color: #fff;
