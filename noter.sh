@@ -1,16 +1,21 @@
 #!/bin/bash
-# noter 1.2.2 - "feeds, holy shit!" - @k@layer8.space - mit
+# noter 1.2.3 - "nice styles" - @k@layer8.space - mit
 
 showgenerator="true"
 backtotop="true"
 lastupdated="true"
 #rssfeed="true"
 
+
+# a pretty nifty little logging utility!
 nlog() {
     local ORANGE='\033[0;33m'
     local NO_COLOR='\033[0m'
-    echo -e "${ORANGE}[noter] | ${1} ${NO_COLOR}"
+    local calling_function=${FUNCNAME[1]}
+    
+    echo -e "${ORANGE}[noter] ${calling_function} | ${1} ${NO_COLOR}"
 }
+
 
 if [ ! -d "notes" ]; then
     nlog "Error: 'notes' folder not found!"
@@ -22,6 +27,7 @@ checksetting() {
     # Eg:
     # checksetting "yourmom" "$isyourmom"
     if [ "$2" = true ]; then
+        nlog "$1 set to $2"
         echo "$1" >>"$output_file"
     fi
 }
@@ -53,7 +59,7 @@ generate_note_html() {
         echo "<h3><a href='#$(date -d "$(basename "$1" .txt)" +"%Y")'>$(date -d "$(basename "$1" .txt)" +"%Y")</a></h3>"
     fi
     echo "<h4><a href='#$(basename "$1" .txt)'>$note_date</a></h4>"
-    echo "<pre>$(cat "$1")</pre>"
+    echo "$(cat "$1")</br>"
     echo "</div>"
 }
 
@@ -78,6 +84,7 @@ generate_top_year_bar() {
 # im faster than Google at getting a
 # feed going goddamit!
 generate_rss_feed() {
+    nlog "generating rss feed"
     local rss_file="feed.xml"
     local rss_title="koutsies telenotes"
     local rss_description="thoughts about mainly computers... maybe recipes and cats too?"
@@ -101,18 +108,18 @@ generate_rss_feed() {
     <docs>https://cyber.harvard.edu/rss/rss.html</docs>
     <generator>noter</generator>" >"$rss_file"
     
-    if [ ! -d "notes" ]; then
-        echo "Directory 'notes' not found!"
-        return 1
-    fi
-    
     # this works, don't touch.
     for file in $(find notes -name '*.txt' -type f -print0 | sort -zr | xargs -0); do
         if [ -f "$file" ] && [ -s "$file" ]; then
+            nlog "$file"
             local note_date=$(date -d "$(basename "$file" .txt)" +"%a, %d %b %Y %H:%M:%S GMT")
             local note_link="$rss_link#$(basename "$file" .txt)"
             local note_title=$(basename "$file" .txt)
-            local note_description=$(head -n 1 "$file")  # Use the first line of the note as the description
+            local note_description=$(head -n 1 "$file")
+            # Currently we use the first line of the note as the description
+            # This could be improved uppon by using a selector or something to grab
+            # the title for example from a h1 or something as (at least I) tend to
+            # use those when i type posts.
             
             echo "  <item>
     <title>$(xml_escape "$note_title")</title>
@@ -129,9 +136,8 @@ generate_rss_feed() {
     nlog "rss feed generated, please remember to move it too with the site: $rss_file"
 }
 
-
-
-
+# why is this stray here, im too afraid to move it
+# godspeed notecount...
 notecount=$(find notes -name "*.txt" ! -empty | wc -l)
 
 # Create HTML file
@@ -153,21 +159,27 @@ echo "<!DOCTYPE html>
     body {
       background-color: #0f0f0f;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial Rounded MT', sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100%;
       margin: 0;
+      /* font legibility optimizations */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
     .container {
       max-width: 800px;
       padding: 20px;
+      border-radius: 15px;
     }
     .note {
       background-color: #181717;
       padding: 10px;
       margin-bottom: 20px;
+      border-radius: 10px;
     }
     h1 {
       text-align: center;
@@ -175,14 +187,17 @@ echo "<!DOCTYPE html>
     h3 {
       color: #fff;
     }
-    pre {
+    img {
+      border-radius: 5px;
+    }
+    note {
       color: #fff;
       white-space: pre-wrap;
     }
     code {
-      color: #ff8c00;
-      font-family: 'Courier New', monospace;
-      white-space: pre-wrap;
+        color: #00ff62b5;
+        font-family: "Lucida Console", "Courier New", monospace;
+        white-space: pre-wrap;
     }
     .back-to-top {
       text-align: right;
@@ -192,18 +207,46 @@ echo "<!DOCTYPE html>
       text-align: right;
       margin-bottom: 20px;
       color: #888;
-      font-size: 12px;
+      font-size: 13px;
     }
     a:link, a:visited, a:hover, a:active {
-      color: #ff6600;
+      color: #ff7b00;
+      font-style: normal;
       text-decoration: underline;
-      font-style: italic;
+    }
+    /* le tableee */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 10px 15px;
+        border: 1px solid #fff;
+        border-radius: 8px;
+    }
+
+    th {
+        background: #1f1f1f;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    td {
+        background: #0b0b0b;
     }
   </style>
 </head>
 <body>
-<div class='container'><h1>koutsie's telenotes</h1><br><center> <a rel='me' href='https://layer8.space/@k'>fedi</a> | <a href="feed.xml">rss</a> | <a href="https://the-sauna.icu/">sauna</a> </center>" >"$output_file"
+<div class='container'>
+<h1>koutsie's telenotes</h1><br>
+<center> <a rel='me' href='https://layer8.space/@k'>fedi</a> | <a href="feed.xml">rss</a> | <a href="https://the-sauna.icu/">sauna</a> </center>" >"$output_file"
 generate_top_year_bar >>"$output_file"
+
 # loop for every note in notes
 nlog "generating page..."
 for file in $(ls -r notes/*.txt); do
@@ -218,6 +261,7 @@ done
 generate_rss_feed
 
 # bottom navigation
+nlog "applying settings"
 checksetting "<div class='generated-with'>generated with <a href='https://git.sr.ht/~koutsie/noter'>noter</a></div>" "$showgenerator"
 checksetting "<div class='back-to-top'><a href='#'>Back to Top</a></div>" "$backtotop"
 checksetting "<div class='last-updated'>last Updated: $(date +"%Y-%m-%d %H:%M:%S")</div>" "$lastupdated"
