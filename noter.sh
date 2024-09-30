@@ -146,6 +146,7 @@ echo "<!DOCTYPE html>
 <html>
 <head>
   <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>$notecount notes | noter</title>
   <meta property='og:title' content='koutsies telenotes' />
   <meta property='og:description' content='thoughts about mainly computers... maybe recipes and cats too?' />
